@@ -1,26 +1,50 @@
 import React, { useState } from "react";
 import "./Login.css";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, Navigate} from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Login() {
   const [email, setEmail] = useState(null);
   const [pass, setPass] = useState(null);
-  //   const [token, setToken] = useState(null);
-  const loginNow = function(email, pass) {
+  const [token, setToken] = useState(null);
+  const [userData,setUserData] = useState(null)
+  const [redirect, setRedirect] = useState(false)
+
+  if(redirect===true){
+    return <Navigate to="/" state={userData}/>;
+  }
+
+  const loginNow = async function(e,email, pass) {
+    e.preventDefault()
     axios
       .post("/login", {
         email: email,
         password: pass,
       })
       .then(function(response) {
-        console.log(response.data);
+        setUserData(response.data.user);
+        setToken(response.data.token); 
+        
+        
+        localStorage.setItem('userLocalData',JSON.stringify({
+          email:userData.email,
+          token:token
+        }))
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}` 
+
+        toast("Logged In!")
+        setTimeout(()=>{
+          setRedirect(true)
+        },2000)
+        
       });
   };
 
   return (
     <div className="container">
-      <form id="login" onSubmit={() => loginNow(email, pass)}>
+      <form id="login" onSubmit={(e) => loginNow(e,email, pass)}>
         <h2>Krayo Disk</h2>
         <div className="mb-3">
         <h6>Login Form</h6>
@@ -52,6 +76,7 @@ export default function Login() {
         First time here? <Link to="/register">Regsiter</Link>
       </span>
       </form>
+      <ToastContainer />
     </div>
   );
 }

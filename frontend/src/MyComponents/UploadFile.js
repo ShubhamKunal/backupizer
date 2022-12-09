@@ -4,7 +4,7 @@ import axios from "axios";
 import { useState } from "react";
 import MyFiles from './MyFiles'
 
-export default function UploadFile() {
+export default function UploadFile(props) {
   const [file, setFile] = useState(null);
   const baseURL = "http://localhost:4000/";
   const [myFiles, setMyFiles] = useState(null);
@@ -37,6 +37,7 @@ export default function UploadFile() {
     <div className="container my-4">
       <h2>Krayo-Disk</h2>
       <br />
+      {props.state}
       <div className="input-group mb-3 my-4">
         <label className="input-group-text" htmlFor="inputGroupFile01">
           Upload

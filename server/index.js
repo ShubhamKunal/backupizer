@@ -47,14 +47,19 @@ app.post("/login", async (req, res) => {
     return res.json({ message: "Please Register first" });
   } else {
     console.log(data);
-    const matchPassword = await bcrypt.compare(password, data.password);
+    const matchPassword = await bcrypt.compareSync(password,data.password);
+    // console.log("Password from request: "+password)
+    // console.log("Hashed Password: "+password)
+    // console.log(matchPassword)
     if (!matchPassword) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
     const token = jwt.sign({ email: data.email, id: data._id }, SECRET_KEY, {
-      expiresIn: "500s",
+      expiresIn: "30s",
     });
-    res.status(201).json({ user: data, token: token });
+    // res.status(201).send({ user: data, token: token });
+    console.log(token)
+    res.status(201).json({user:data,token:token})
   }
 });
 
@@ -76,7 +81,7 @@ app.post("/register", async (req, res) => {
       { expiresIn: "500s" }
     );
 
-    res.status(201).json({ user: result, token: token }).redirect('/login');
+    res.status(201).json({ user: result, token: token });
   } else {
     res.json({ message: "You are already registered!" });
   }
