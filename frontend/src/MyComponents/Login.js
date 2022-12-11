@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./Login.css";
 import axios from "axios";
-import { Link, Navigate} from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -9,11 +9,13 @@ export default function Login() {
   const [email, setEmail] = useState(null);
   const [pass, setPass] = useState(null);
   const [token, setToken] = useState(null);
-  const [userData,setUserData] = useState(null)
+  const [userEmail,setUserEmail] = useState(null)
+  const [userID,setUserID] = useState(null)
   const [redirect, setRedirect] = useState(false)
-
+  const navigate = useNavigate()
   if(redirect===true){
-    return <Navigate to="/" state={userData}/>;
+    // return <Navigate to="/"/>;
+    navigate("/",{state:{id:userID,email:userEmail,token:token}})
   }
 
   const loginNow = async function(e,email, pass) {
@@ -24,17 +26,28 @@ export default function Login() {
         password: pass,
       })
       .then(function(response) {
-        setUserData(response.data.user);
+        setUserID(response.data.id);
+        setUserEmail(response.data.userEmail)
         setToken(response.data.token); 
         
         
         localStorage.setItem('userLocalData',JSON.stringify({
-          email:userData.email,
+          id:userID,
+          email:userEmail,
           token:token
         }))
         axios.defaults.headers.common['Authorization'] = `Bearer ${token}` 
 
-        toast("Logged In!")
+        toast.success("😘 Logged In!",{
+          position: "bottom-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+          })
         setTimeout(()=>{
           setRedirect(true)
         },2000)
@@ -76,7 +89,18 @@ export default function Login() {
         First time here? <Link to="/register">Regsiter</Link>
       </span>
       </form>
-      <ToastContainer />
+      <ToastContainer 
+      position="bottom-center"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="dark"
+      />
     </div>
   );
 }

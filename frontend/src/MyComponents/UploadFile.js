@@ -1,19 +1,39 @@
-import React from "react";
+import React, { useEffect } from "react";
 import FormData from "form-data";
 import axios from "axios";
 import { useState } from "react";
-import MyFiles from './MyFiles'
+import MyFiles from "./MyFiles";
+import "./UploadFile.css";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Navigate, useLocation} from "react-router-dom";
 
 export default function UploadFile(props) {
   const [file, setFile] = useState(null);
   const baseURL = "http://localhost:4000/";
   const [myFiles, setMyFiles] = useState(null);
+  const location = useLocation();
+
+  if (location.state === null) {
+    return <Navigate to="/login" />;
+  }
 
   const handleUpload = async function(e) {
     e.preventDefault();
     var formData = new FormData();
     formData.append("file", file);
-    console.log(file);
+    formData.append("email", location.state.email);
+
+    toast.info("🚀 Uploading...", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
     try {
       await axios.post(baseURL + "upload", formData, {
         headers: {
@@ -25,19 +45,45 @@ export default function UploadFile(props) {
     }
   };
 
-    axios.get(baseURL + "files")
-      .then(function(response) {
-        setMyFiles(response.data)
-      })
-      .catch((err) => {
-        console.log("This Error: " + err);
-      });
- 
+  let handleLogout = function(e) {
+    e.preventDefault();
+    toast.success("👋 Bye Bye.", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+    setTimeout(() => {
+      location.state = null;
+    }, 2000);
+  };
+  let getFiles = function() {
+    try {
+      axios
+        .post(baseURL + "files", { email: location.state.email })
+        .then(function(response) {
+          setMyFiles(response.data);
+        })
+        .catch((err) => {
+          console.log("This Error: " + err);
+        });
+    } catch (e) {
+      console.log("There's this error: " + e);
+    }
+  };
+  useEffect(() => {
+    getFiles();
+  });
   return (
-    <div className="container my-4">
+    <div className="container my-2" id="uploader">
       <h2>Krayo-Disk</h2>
-      <br />
-      {props.state}
+      <div className="fw-bold font-monospace">
+        Hi, {location.state !== null ? location.state.email : "USER"}!
+      </div>
       <div className="input-group mb-3 my-4">
         <label className="input-group-text" htmlFor="inputGroupFile01">
           Upload
@@ -52,12 +98,31 @@ export default function UploadFile(props) {
           }}
         />
       </div>
-      
-      <button className="btn btn-sm btn-dark" onClick={(e) => handleUpload(e)}>
+      <button
+        className="btn btn-sm btn-dark center"
+        onClick={(e) => handleUpload(e)}
+      >
         Submit
+      </button>{" "}
+      <button className="btn btn-sm btn-dark" onClick={(e) => handleLogout(e)}>
+        Logout
       </button>
-     
-      <MyFiles files={myFiles} />
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
+      <MyFiles
+        files={myFiles}
+        email={location.state !== null ? location.state.email : []}
+      />
     </div>
   );
 }

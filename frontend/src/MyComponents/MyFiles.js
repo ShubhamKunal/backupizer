@@ -1,16 +1,29 @@
 import React from "react";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function MyFiles(props) {
   let files = props.files;
   const DeleteFile = async function(filename){
+    toast.warning("😨Deleting", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
     await axios.post("/delete/"+filename,{
-      fname:filename
+      fname:filename,
+      email:props.email
     })
   }
   return (
     files===null?<h2>Please add your first file!</h2>:
-    <div className="container my-4" >
+    <div className="container my-5" >
       <div>
       {}
       <h2>My Files</h2>
@@ -43,6 +56,18 @@ export default function MyFiles(props) {
         </tbody>
       </table>
       </div>
+      <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </div>
   );
   
