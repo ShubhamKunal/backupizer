@@ -16,8 +16,8 @@ export default function Regsiter() {
   if (redirect === true) {
     navigate("/",{state:{id:userID,email:userEmail,token:token}})
   }
-  const registerNow = function(e, email, pass) {
-    e.preventDefault();
+  const registerNow = function( email, pass) {
+    // e.preventDefault();
     axios
       .post("/register", {
         email: email,

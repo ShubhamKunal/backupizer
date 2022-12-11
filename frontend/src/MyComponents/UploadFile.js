@@ -6,19 +6,19 @@ import MyFiles from "./MyFiles";
 import "./UploadFile.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { Navigate, useLocation} from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function UploadFile(props) {
   const [file, setFile] = useState(null);
   const baseURL = "http://localhost:4000/";
   const [myFiles, setMyFiles] = useState(null);
   const location = useLocation();
+  const navigate = useNavigate();
+  useEffect(() => {
+    getFiles()
+  })
 
-  if (location.state === null) {
-    return <Navigate to="/login" />;
-  }
-
-  const handleUpload = async function(e) {
+  const handleUpload = async function (e) {
     e.preventDefault();
     var formData = new FormData();
     formData.append("file", file);
@@ -45,7 +45,7 @@ export default function UploadFile(props) {
     }
   };
 
-  let handleLogout = function(e) {
+  let handleLogout = function (e) {
     e.preventDefault();
     toast.success("👋 Bye Bye.", {
       position: "top-center",
@@ -59,13 +59,14 @@ export default function UploadFile(props) {
     });
     setTimeout(() => {
       location.state = null;
+      navigate("/login")
     }, 2000);
   };
-  let getFiles = function() {
+  let getFiles = function () {
     try {
       axios
         .post(baseURL + "files", { email: location.state.email })
-        .then(function(response) {
+        .then(function (response) {
           setMyFiles(response.data);
         })
         .catch((err) => {
@@ -75,9 +76,10 @@ export default function UploadFile(props) {
       console.log("There's this error: " + e);
     }
   };
-  useEffect(() => {
-    getFiles();
-  });
+
+  
+  
+
   return (
     <div className="container my-2" id="uploader">
       <h2>Krayo-Disk</h2>
