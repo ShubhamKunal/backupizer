@@ -14,13 +14,13 @@ export default function UploadFile(props) {
   const [myFiles, setMyFiles] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   useEffect(() => {
-    if(location.state===null){
-      navigate("/login")
+    if (location.state === null) {
+      navigate("/login");
     }
-    getFiles()
-  })
+    getFiles();
+  });
 
   const handleUpload = async function (e) {
     e.preventDefault();
@@ -63,7 +63,7 @@ export default function UploadFile(props) {
     });
     setTimeout(() => {
       location.state = null;
-      navigate("/login")
+      navigate("/login");
     }, 2000);
   };
   let getFiles = function () {
@@ -80,7 +80,6 @@ export default function UploadFile(props) {
       console.log("There's this error: " + e);
     }
   };
-
 
   return (
     <div className="container my-2" id="uploader">

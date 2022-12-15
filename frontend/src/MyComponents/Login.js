@@ -140,6 +140,7 @@ export default function Login() {
 
   return (
     <div className="container">
+      <div className="image"><img src="Krayo_logo.png" alt="Nothing to see here folks!"/></div>
       <form id="login" onSubmit={(e) => loginNow(e, email, pass)}>
         <h2>Krayo Disk</h2>
         <div className="mb-2">

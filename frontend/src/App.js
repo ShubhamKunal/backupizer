@@ -1,12 +1,11 @@
 import React from "react";
 import "./App.css";
-import Login from './MyComponents/Login'
-import {BrowserRouter,Routes,Route} from "react-router-dom"
+import Login from "./MyComponents/Login";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Register from "./MyComponents/Register";
-import UploadFiles from './MyComponents/UploadFile'
+import UploadFiles from "./MyComponents/UploadFile";
 
 function App() {
-  
   return (
     <div className="App">
       <BrowserRouter>
@@ -16,8 +15,6 @@ function App() {
           <Route exact path="/" element={<UploadFiles />} />
         </Routes>
       </BrowserRouter>
-     
-     
     </div>
   );
 }
