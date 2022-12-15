@@ -14,7 +14,11 @@ export default function UploadFile(props) {
   const [myFiles, setMyFiles] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
+  
   useEffect(() => {
+    if(location.state===null){
+      navigate("/login")
+    }
     getFiles()
   })
 
@@ -77,8 +81,6 @@ export default function UploadFile(props) {
     }
   };
 
-  
-  
 
   return (
     <div className="container my-2" id="uploader">

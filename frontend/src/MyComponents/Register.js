@@ -10,22 +10,22 @@ export default function Regsiter() {
   const [pass, setPass] = useState(null);
   const [redirect, setRedirect] = useState(false);
   const [token, setToken] = useState(null);
-  const [userEmail,setUserEmail] = useState(null)
-  const [userID,setUserID] = useState(null)
-  const navigate = useNavigate()
+  const [userEmail, setUserEmail] = useState(null);
+  const [userID, setUserID] = useState(null);
+  const navigate = useNavigate();
   if (redirect === true) {
-    navigate("/",{state:{id:userID,email:userEmail,token:token}})
+    navigate("/", { state: { id: userID, email: userEmail, token: token } });
   }
-  const registerNow = function( email, pass) {
-    // e.preventDefault();
+  const registerNow = function (e, email, pass) {
+    e.preventDefault();
     axios
       .post("/register", {
         email: email,
         password: pass,
       })
-      .then(function(response) {
+      .then(function (response) {
         setUserID(response.data.id);
-        setUserEmail(response.data.userEmail)
+        setUserEmail(response.data.userEmail);
         setToken(response.data.token);
         toast("😁 Registered! Now logging you in", {
           position: "bottom-center",

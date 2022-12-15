@@ -24,10 +24,10 @@ export default function MyFiles(props) {
   return (
     files===null?<h2>Please add your first file!</h2>:
     <div className="container my-5" >
+      {(files.length===0)?<h3>Add your first file!!</h3>:<div></div>}
       <div>
-      {}
       <h2>My Files</h2>
-
+      
       <table className="table">
         <thead>
           <tr>
