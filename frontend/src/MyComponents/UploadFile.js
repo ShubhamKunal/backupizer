@@ -30,30 +30,7 @@ export default function UploadFile(props) {
       console.log("There's this error: " + e);
     }
   };
-  useEffect(() => {
-    const verifyUser = async () => {
-      if (!cookies.jwt) {
-        navigate("/login");
-      } else {
-        const { data } = await axios.post(
-          "http://localhost:4000",
-          {},
-          {
-            withCredentials: true,
-          }
-        );
-        setUserEmail(data.user);
-        if (!data.status) {
-          navigate("/login");
-        } else {
-          // toast(`Hi ${data.user} 🦄`, {
-          //   theme: "dark",
-          // });
-        }
-      }
-    };
-    verifyUser();
-  }, [cookies, navigate, removeCookie]);
+  
 
   const logOut = (e) => {
     e.preventDefault()
@@ -90,6 +67,30 @@ export default function UploadFile(props) {
     }
     getFiles();
   };
+  useEffect(() => {
+    const verifyUser = async () => {
+      if (!cookies.jwt) {
+        navigate("/login");
+      } else {
+        const { data } = await axios.post(
+          "http://localhost:4000",
+          {},
+          {
+            withCredentials: true,
+          }
+        );
+        setUserEmail(data.user);
+        if (!data.status) {
+          navigate("/login");
+        } else {
+          // toast(`Hi ${data.user} 🦄`, {
+          //   theme: "dark",
+          // });
+        }
+      }
+    };
+    verifyUser();
+  }, [cookies, navigate, removeCookie]);
 
   
 

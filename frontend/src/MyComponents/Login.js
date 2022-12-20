@@ -11,13 +11,8 @@ export default function Login() {
   
   const [cookies] = useCookies([]);
   const navigate = useNavigate();
-  useEffect(() => {
-    if (cookies.jwt) {
-      navigate("/");
-    }
-  }, [cookies, navigate]);
+  
   const setHeader= function(token){
-    // if(axios.defaults.headers.common["Authorization"]==null)
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }
   const [values, setValues] = useState({ email: "", password: "" });
@@ -54,19 +49,7 @@ export default function Login() {
 
     
   };
-  useEffect(() => {
-    /* global google */
-    google.accounts.id.initialize({
-      client_id:
-        "582447123542-uqlrs6m29uc7sa0ksrmiovb0d2d2cutu.apps.googleusercontent.com",
-      callback: handleCallbackResponse,
-    });
-
-    google.accounts.id.renderButton(document.getElementById("signInDiv"), {
-      theme: "outline",
-      size: "medium",
-    });
-  });
+  
   async function handleCallbackResponse(response) {
     const token = response.credential;
     var userObject = jwtDecode(token);
@@ -81,10 +64,27 @@ export default function Login() {
     );
     
     localStorage.setItem("app_token","Bearer "+data.token)
-    // console.log(localStorage.getItem("app_token"))
     setHeader(data.token)
     navigate("/")
   }
+  useEffect(() => {
+    if (cookies.jwt) {
+      navigate("/");
+    }
+  }, [cookies, navigate]);
+  useEffect(() => {
+    /* global google */
+    google.accounts.id.initialize({
+      client_id:
+        "582447123542-uqlrs6m29uc7sa0ksrmiovb0d2d2cutu.apps.googleusercontent.com",
+      callback: handleCallbackResponse,
+    });
+
+    google.accounts.id.renderButton(document.getElementById("signInDiv"), {
+      theme: "outline",
+      size: "medium",
+    });
+  });
 
   return (
     <div className="container">
