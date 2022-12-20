@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 
 module.exports.checkUser = (req, res, next) => {
   const token = req.cookies.jwt;
-  console.log("Checking User")
   if (token) {
     jwt.verify(
       token,
@@ -23,5 +22,29 @@ module.exports.checkUser = (req, res, next) => {
   } else {
     res.json({ status: false });
     next();
+  }
+};
+
+module.exports.giveStatic = (req, res, next) => {
+  const token = req.cookies.jwt;
+  if (token) {
+    jwt.verify(
+      token,
+      process.env.ACCESS_SECRET_KEY,
+      async (err, decodedToken) => {
+        if (err) {
+          res.json({message:"some error"});
+          next();
+        } else {
+          const user = await User.findById(decodedToken.id);
+          if (user){
+            next();
+          }
+          
+        }
+      }
+    );
+  } else {
+    res.send("GO HOME THEIF!!!");
   }
 };

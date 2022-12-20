@@ -51,7 +51,7 @@ export default function MyFiles(props) {
                           className="btn btn-dark btn-sm"
                           onClick={() =>
                             (document.location.href =
-                              "http://localhost:4000/" + file)
+                              "http://localhost:4000/uploads/" + file)
                           }
                         >
                           Download

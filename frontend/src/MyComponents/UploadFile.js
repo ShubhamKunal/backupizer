@@ -98,7 +98,7 @@ export default function UploadFile(props) {
     <div className="container my-2" id="uploader">
       <h2>Krayo-Disk</h2>
       <div className="fw-bold font-monospace">
-        Hi, {UserEmail !== null ? UserEmail : navigate("/login")}!
+        Hi, {UserEmail !== null ? UserEmail : "User"}!
       </div>
       <div className="input-group mb-3 my-4">
         <label className="input-group-text" htmlFor="inputGroupFile01">

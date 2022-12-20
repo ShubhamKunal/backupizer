@@ -8,6 +8,8 @@ const downloadsFolder = require("downloads-folder");
 const filesModel = require("../models/filesModel");
 const verifyJWT = require("../middlewares/verifyJWT");
 const https = require("https");
+const cookieParser = require("cookie-parser");
+
 router.use(verifyJWT);
 router.use(express.json());
 

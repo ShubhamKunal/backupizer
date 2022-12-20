@@ -5,13 +5,11 @@ const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel");
 const cookieParser = require("cookie-parser");
 const { checkUser } = require("../middlewares/authMiddleware");
-
 require("dotenv").config();
 router.use(cookieParser());
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  console.log(req.body);
   let data = await userModel.findOne({ email: email });
   if (!data) {
     console.log("Please register first");
@@ -25,9 +23,8 @@ router.post("/login", async (req, res) => {
     const access_token = jwt.sign(
       { email: data.email, id: data._id },
       process.env.ACCESS_SECRET_KEY,
-      { expiresIn: "5m" }
+      { expiresIn: "1d" }
     );
-    console.log("access: ", access_token);
     res.cookie("jwt", access_token, {
       httpOnly: false, //accessible only by web server
       maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -52,7 +49,7 @@ router.post("/register", async (req, res) => {
     const access_token = jwt.sign(
       { email: data.email, id: data._id },
       process.env.ACCESS_SECRET_KEY,
-      { expiresIn: "5m" }
+      { expiresIn: "1d" }
     );
     
     res.cookie("jwt", access_token, {
