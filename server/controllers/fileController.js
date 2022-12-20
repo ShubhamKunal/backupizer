@@ -3,8 +3,14 @@ const app = express();
 const router = express.Router();
 const path = require("path");
 const fs = require("fs");
+const download = require("download");
+const downloadsFolder = require("downloads-folder");
+const filesModel = require("../models/filesModel");
+const verifyJWT = require("../middlewares/verifyJWT");
+const https = require("https");
+router.use(verifyJWT);
+router.use(express.json());
 
-const filesModel = require('../models/filesModel')
 
 router.post("/upload", async (req, res) => {
   const filename = Date.now() + "_" + req.files.file.name;
@@ -29,23 +35,49 @@ router.post("/upload", async (req, res) => {
 router.post("/files", async (req, res) => {
   uploadsFolder = path.join(path.parse(__dirname).dir, "uploads");
   fileNames = [];
-  let userEmail = req.body.email;
-  let result = await filesModel.find({ email: userEmail }).then((files) => {
+  let { email } = req.body;
+  let result = await filesModel.find({ email: email }).then((files) => {
     files.forEach((file) => fileNames.push(file.filename));
   });
   res.send(fileNames);
 });
 
 router.post("/delete/:fname", async (req, res) => {
-  fs.unlink(path.join(path.parse(__dirname).dir, "uploads", req.params.fname), (err) => {
-    if (err) console.log("Error Description: " + err);
-    console.log("File Deleted!");
-  });
+  fs.unlink(
+    path.join(path.parse(__dirname).dir, "uploads", req.params.fname),
+    (err) => {
+      if (err) console.log("Error Description: " + err);
+      console.log("File Deleted!");
+    }
+  );
   let userEmail = req.body.email;
   let result = await filesModel.findOneAndDelete({
     email: userEmail,
     filename: req.params.fname,
   });
+});
+
+router.get("/download/:fname", async (req, res) => {
+  //download file of fname from uploads folder
+  // const file = path.join(
+  //   path.parse(__dirname).dir,
+  //   "uploads",
+  //   req.params.fname
+  // );
+  
+  // https.get(file, (res) => {
+  //   const Path = downloadsFolder();
+  //   const filePath = fs.createWriteStream(Path);
+  //   res.pipe(filePath)
+  //   filePath.on('finish',()=>{
+  //     filePath.close();
+  //       console.log('Download Completed');
+  //   })
+
+    
+  // });
+
+  console.log(req.params.fname," is downloaded!")
 });
 
 module.exports = router;

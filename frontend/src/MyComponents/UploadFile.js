@@ -6,27 +6,68 @@ import MyFiles from "./MyFiles";
 import "./UploadFile.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
+import { useCookies } from "react-cookie";
+import Cookie from 'js-cookie'
 
 export default function UploadFile(props) {
   const [file, setFile] = useState(null);
+  const [UserEmail, setUserEmail] = useState(null);
   const baseURL = "http://localhost:4000/";
   const [myFiles, setMyFiles] = useState(null);
-  const location = useLocation();
   const navigate = useNavigate();
+  const [cookies, removeCookie] = useCookies(['jwt']);
 
-  useEffect(() => {
-    if (location.state === null) {
-      navigate("/login");
+  let getFiles = async function () {
+    setMyFiles(null);
+    try {
+      await axios
+        .post(baseURL + "files", { email: UserEmail })
+        .then(function (response) {
+          setMyFiles(response.data);
+        });
+    } catch (e) {
+      console.log("There's this error: " + e);
     }
-    getFiles();
-  });
+  };
+  useEffect(() => {
+    const verifyUser = async () => {
+      if (!cookies.jwt) {
+        navigate("/login");
+      } else {
+        const { data } = await axios.post(
+          "http://localhost:4000",
+          {},
+          {
+            withCredentials: true,
+          }
+        );
+        setUserEmail(data.user);
+        if (!data.status) {
+          navigate("/login");
+        } else {
+          // toast(`Hi ${data.user} 🦄`, {
+          //   theme: "dark",
+          // });
+        }
+      }
+    };
+    verifyUser();
+  }, [cookies, navigate, removeCookie]);
+
+  const logOut = (e) => {
+    e.preventDefault()
+    localStorage.removeItem("app_token");
+    removeCookie("jwt")
+    Cookie.remove("jwt")
+    navigate("/login");
+  };
 
   const handleUpload = async function (e) {
     e.preventDefault();
     var formData = new FormData();
     formData.append("file", file);
-    formData.append("email", location.state.email);
+    formData.append("email", UserEmail);
 
     toast.info("🚀 Uploading...", {
       position: "top-center",
@@ -47,45 +88,16 @@ export default function UploadFile(props) {
     } catch (err) {
       console.log("There was an error");
     }
+    getFiles();
   };
 
-  let handleLogout = function (e) {
-    e.preventDefault();
-    toast.success("👋 Bye Bye.", {
-      position: "top-center",
-      autoClose: 2000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "dark",
-    });
-    setTimeout(() => {
-      location.state = null;
-      navigate("/login");
-    }, 2000);
-  };
-  let getFiles = function () {
-    try {
-      axios
-        .post(baseURL + "files", { email: location.state.email })
-        .then(function (response) {
-          setMyFiles(response.data);
-        })
-        .catch((err) => {
-          console.log("This Error: " + err);
-        });
-    } catch (e) {
-      console.log("There's this error: " + e);
-    }
-  };
+  
 
   return (
     <div className="container my-2" id="uploader">
       <h2>Krayo-Disk</h2>
       <div className="fw-bold font-monospace">
-        Hi, {location.state !== null ? location.state.email : "USER"}!
+        Hi, {UserEmail !== null ? UserEmail : navigate("/login")}!
       </div>
       <div className="input-group mb-3 my-4">
         <label className="input-group-text" htmlFor="inputGroupFile01">
@@ -102,12 +114,18 @@ export default function UploadFile(props) {
         />
       </div>
       <button
+        className="btn btn-sm btn-dark center mx-2"
+        onClick={() => getFiles()}
+      >
+        Update Files
+      </button>
+      <button
         className="btn btn-sm btn-dark center"
         onClick={(e) => handleUpload(e)}
       >
         Submit
       </button>{" "}
-      <button className="btn btn-sm btn-dark" onClick={(e) => handleLogout(e)}>
+      <button className="btn btn-sm btn-dark" onClick={(e) => logOut(e)}>
         Logout
       </button>
       <ToastContainer
@@ -122,10 +140,7 @@ export default function UploadFile(props) {
         pauseOnHover
         theme="dark"
       />
-      <MyFiles
-        files={myFiles}
-        email={location.state !== null ? location.state.email : []}
-      />
+      <MyFiles files={myFiles} email={UserEmail !== null ? UserEmail : []} />
     </div>
   );
 }

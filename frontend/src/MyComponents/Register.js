@@ -4,62 +4,71 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-export default function Regsiter() {
-  const [email, setEmail] = useState(null);
-  const [pass, setPass] = useState(null);
-  const [redirect, setRedirect] = useState(false);
-  const [token, setToken] = useState(null);
-  const [userEmail, setUserEmail] = useState(null);
-  const [userID, setUserID] = useState(null);
+import { useEffect } from "react";
+import {  useCookies } from "react-cookie";
+export default function Register() {
   const navigate = useNavigate();
-  if (redirect === true) {
-    navigate("/", { state: { id: userID, email: userEmail, token: token } });
-  }
-  const registerNow = function (e, email, pass) {
+
+  const [cookies] = useCookies(["cookie-name"]);
+  useEffect(() => {
+    if (cookies.jwt) {
+      navigate("/");
+    }
+  }, [cookies, navigate]);
+  const [values, setValues] = useState({ email: "", password: "" });
+  const generateError = (error) =>
+    toast.error(error, {
+      position: "bottom-right",
+    });
+  const setHeader = function (token) {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  };
+  const handleSubmit = async function(e) {
     e.preventDefault();
-    axios
-      .post("/register", {
-        email: email,
-        password: pass,
-      })
-      .then(function (response) {
-        setUserID(response.data.id);
-        setUserEmail(response.data.userEmail);
-        setToken(response.data.token);
-        toast("😁 Registered! Now logging you in", {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-        setTimeout(() => {
-          setRedirect(true);
-        }, 2000);
-      });
+    try {
+      const { data } = await axios.post(
+        "/register",
+        {
+          ...values,
+        },
+        { withCredentials: true }
+      );
+      setHeader(data.token);
+      localStorage.setItem("app_token", "Bearer " + data.token);
+      if (data) {
+        if (data.errors) {
+          const { email, password } = data.errors;
+          if (email) generateError(email);
+          else if (password) generateError(password);
+        } else {
+          navigate("/");
+        }
+      }
+    } catch (ex) {
+      console.log(ex);
+    }
   };
 
   return (
     <div className="container">
       <div className="image">
-        <img src="Krayo_logo.png" alt="Nothing to see here folks!"/>
+        <img src="Krayo_logo.png" alt="Nothing to see here folks!" />
       </div>
-      <form id="register" onSubmit={(e) => registerNow(e, email, pass)}>
+      <form id="register" onSubmit={(e) => handleSubmit(e)}>
         <h2>Krayo Disk</h2>
         <div className="mb-3">
           <h6>Registration Form</h6>
-          <label htmlFor="exampleInputEmail1" className="form-label">
+          <label htmlFor="email" className="form-label">
             Email address
           </label>
           <input
             type="email"
             className="form-control"
             id="email"
-            onChange={(e) => setEmail(e.target.value)}
+            name="email"
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
           />
         </div>
         <div className="mb-3">
@@ -69,8 +78,10 @@ export default function Regsiter() {
           <input
             type="password"
             className="form-control"
-            id="pass"
-            onChange={(e) => setPass(e.target.value)}
+            id="password"
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
           />
         </div>
         <button type="submit" className="btn btn-dark btn-sm my-2">

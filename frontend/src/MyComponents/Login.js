@@ -4,125 +4,55 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useCookies } from "react-cookie";
 import jwtDecode from "jwt-decode";
 
 export default function Login() {
-  const [email, setEmail] = useState(null);
-  const [pass, setPass] = useState(null);
-  const [token, setToken] = useState(null);
-  const [userEmail, setUserEmail] = useState(null);
-  const [userID, setUserID] = useState(null);
-  const [redirect, setRedirect] = useState(false);
+  
+  const [cookies] = useCookies([]);
   const navigate = useNavigate();
-  if (redirect === true) {
-    navigate("/", { state: { id: userID, email: userEmail, token: token } });
+  useEffect(() => {
+    if (cookies.jwt) {
+      navigate("/");
+    }
+  }, [cookies, navigate]);
+  const setHeader= function(token){
+    // if(axios.defaults.headers.common["Authorization"]==null)
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   }
-
-  function handleCallbackResponse(response) {
-    const token = response.credential;
-    var userObject = jwtDecode(token);
-    loginWithGoogle(userObject.email, userObject.email);
-  }
-  const loginWithGoogle = async function (email, pass) {
-    axios.post("/exists", { email: email }).then(function (response) {
-      if (response.data.exists) {
-        axios
-          .post("/login", {
-            email: email,
-            password: pass,
-          })
-          .then(function (response) {
-            setUserID(response.data.id);
-            setUserEmail(response.data.userEmail);
-            setToken(response.data.token);
-
-            localStorage.setItem(
-              "userLocalData",
-              JSON.stringify({
-                id: userID,
-                email: userEmail,
-                token: token,
-              })
-            );
-            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-            toast.success("😘 Logged In!", {
-              position: "bottom-center",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "dark",
-            });
-            setTimeout(() => {
-              setRedirect(true);
-            }, 2000);
-          });
-      } else {
-        axios
-          .post("/register", {
-            email: email,
-            password: pass,
-          })
-          .then(function (response) {
-            setUserID(response.data.id);
-            setUserEmail(response.data.userEmail);
-            setToken(response.data.token);
-            toast("😁 Registered! Now logging you in", {
-              position: "bottom-center",
-              autoClose: 5000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              theme: "dark",
-            });
-            setTimeout(() => {
-              setRedirect(true);
-            }, 2000);
-          });
-      }
+  const [values, setValues] = useState({ email: "", password: "" });
+  const generateError = (error) =>
+    toast.error(error, {
+      position: "bottom-right",
     });
-  };
-  const loginNow = async function (e, email, pass) {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    axios
-      .post("/login", {
-        email: email,
-        password: pass,
-      })
-      .then(function (response) {
-        setUserID(response.data.id);
-        setUserEmail(response.data.userEmail);
-        setToken(response.data.token);
+    try {
+      const { data } = await axios.post(
+        "http://localhost:4000/login",
+        {
+          ...values,
+        },
+        { withCredentials: true }
+      );
+      
+      localStorage.setItem("app_token","Bearer "+data.token)
+      setHeader(data.token)
+      if (data) {
+        if (data.errors) {
+          const { email, password } = data.errors;
+          if (email) generateError(email);
+          else if (password) generateError(password);
+        } else {
+          navigate("/");
+        }
+      }
+    } catch (ex) {
+      console.log(ex);
+    }
 
-        localStorage.setItem(
-          "userLocalData",
-          JSON.stringify({
-            id: userID,
-            email: userEmail,
-            token: token,
-          })
-        );
-        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-        toast.success("😘 Logged In!", {
-          position: "bottom-center",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-        setTimeout(() => {
-          setRedirect(true);
-        }, 2000);
-      });
+    
   };
   useEffect(() => {
     /* global google */
@@ -137,22 +67,45 @@ export default function Login() {
       size: "medium",
     });
   });
+  async function handleCallbackResponse(response) {
+    const token = response.credential;
+    var userObject = jwtDecode(token);
+    values.email = userObject.email;
+    values.password = userObject.email;
+    const { data } = await axios.post(
+      "http://localhost:4000/login",
+      {
+        ...values,
+      },
+      { withCredentials: true }
+    );
+    
+    localStorage.setItem("app_token","Bearer "+data.token)
+    // console.log(localStorage.getItem("app_token"))
+    setHeader(data.token)
+    navigate("/")
+  }
 
   return (
     <div className="container">
-      <div className="image"><img src="Krayo_logo.png" alt="Nothing to see here folks!"/></div>
-      <form id="login" onSubmit={(e) => loginNow(e, email, pass)}>
+      <div className="image">
+        <img src="Krayo_logo.png" alt="Nothing to see here folks!" />
+      </div>
+      <form id="login" onSubmit={(e) => handleSubmit(e)}>
         <h2>Krayo Disk</h2>
         <div className="mb-2">
           <h6>Login Form</h6>
-          <label htmlFor="exampleInputEmail1" className="form-label">
+          <label htmlFor="email" className="form-label">
             Email address
           </label>
           <input
             type="email"
             className="form-control"
+            name="email"
             id="email"
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
           />
         </div>
         <div className="mb-2">
@@ -162,8 +115,10 @@ export default function Login() {
           <input
             type="password"
             className="form-control"
-            id="pass"
-            onChange={(e) => setPass(e.target.value)}
+            name="password"
+            onChange={(e) =>
+              setValues({ ...values, [e.target.name]: e.target.value })
+            }
           />
         </div>
         <button type="submit" className="btn btn-dark btn-sm my-2">
