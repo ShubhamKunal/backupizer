@@ -34,10 +34,22 @@ export default function UploadFile(props) {
 
   const logOut = (e) => {
     e.preventDefault()
-    localStorage.removeItem("app_token");
-    removeCookie("jwt")
-    Cookie.remove("jwt")
-    navigate("/login");
+    toast.info("👋 Bye Bye!", {
+      position: "top-center",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "dark",
+    });
+    setTimeout(()=>{
+      localStorage.removeItem("app_token");
+      removeCookie("jwt")
+      Cookie.remove("jwt")
+      navigate("/login");
+    },2000)
   };
 
   const handleUpload = async function (e) {
@@ -83,9 +95,6 @@ export default function UploadFile(props) {
         if (!data.status) {
           navigate("/login");
         } else {
-          // toast(`Hi ${data.user} 🦄`, {
-          //   theme: "dark",
-          // });
         }
       }
     };

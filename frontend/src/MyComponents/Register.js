@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
-import {  useCookies } from "react-cookie";
+import { useCookies } from "react-cookie";
 export default function Register() {
   const navigate = useNavigate();
 
@@ -23,7 +23,7 @@ export default function Register() {
   const setHeader = function (token) {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   };
-  const handleSubmit = async function(e) {
+  const handleSubmit = async function (e) {
     e.preventDefault();
     try {
       const { data } = await axios.post(
@@ -41,7 +41,19 @@ export default function Register() {
           if (email) generateError(email);
           else if (password) generateError(password);
         } else {
-          navigate("/");
+          toast.info("🤗 Registered. Come in!", {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+          setTimeout(() => {
+            navigate("/");
+          }, 2000);
         }
       }
     } catch (ex) {

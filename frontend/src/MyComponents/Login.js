@@ -8,13 +8,12 @@ import { useCookies } from "react-cookie";
 import jwtDecode from "jwt-decode";
 
 export default function Login() {
-  
   const [cookies] = useCookies([]);
   const navigate = useNavigate();
-  
-  const setHeader= function(token){
+
+  const setHeader = function (token) {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  }
+  };
   const [values, setValues] = useState({ email: "", password: "" });
   const generateError = (error) =>
     toast.error(error, {
@@ -31,41 +30,91 @@ export default function Login() {
         },
         { withCredentials: true }
       );
-      
-      localStorage.setItem("app_token","Bearer "+data.token)
-      setHeader(data.token)
+
+      localStorage.setItem("app_token", "Bearer " + data.token);
+      setHeader(data.token);
       if (data) {
         if (data.errors) {
           const { email, password } = data.errors;
           if (email) generateError(email);
           else if (password) generateError(password);
         } else {
-          navigate("/");
+          toast.info("😘 Logging in!", {
+            position: "top-center",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+          setTimeout(()=>{
+            navigate("/");
+          },2000)
         }
       }
     } catch (ex) {
       console.log(ex);
     }
-
-    
   };
-  
+
   async function handleCallbackResponse(response) {
     const token = response.credential;
     var userObject = jwtDecode(token);
     values.email = userObject.email;
     values.password = userObject.email;
-    const { data } = await axios.post(
-      "http://localhost:4000/login",
-      {
-        ...values,
-      },
-      { withCredentials: true }
-    );
-    
-    localStorage.setItem("app_token","Bearer "+data.token)
-    setHeader(data.token)
-    navigate("/")
+
+    const resp = await axios.post("/exists", { ...values });
+    if (resp.data.exists) {
+      //login
+      const { data } = await axios.post(
+        "http://localhost:4000/login",
+        {
+          ...values,
+        },
+        { withCredentials: true }
+      );
+      localStorage.setItem("app_token", "Bearer " + data.token);
+      setHeader(data.token);
+      toast.info("😘 Logging in!", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      setTimeout(()=>{
+        navigate("/");
+      },2000)
+    } else {
+      //register
+      const { data } = await axios.post(
+        "http://localhost:4000/register",
+        {
+          ...values,
+        },
+        { withCredentials: true }
+      );
+      localStorage.setItem("app_token", "Bearer " + data.token);
+      setHeader(data.token);
+      toast.info("😘 Logging in!", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      setTimeout(()=>{
+        navigate("/");
+      },2000)
+    }
   }
   useEffect(() => {
     if (cookies.jwt) {
