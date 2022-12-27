@@ -8,6 +8,7 @@ import UploadFiles from "./MyComponents/UploadFile";
 function App() {
   return (
     <div className="App">
+      <link rel="shortcut icon" href="public/favicon.ico"></link>
       <BrowserRouter>
         <Routes>
           <Route exact path="/register" element={<Register />} />

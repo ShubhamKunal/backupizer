@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate} from "react-router-dom";
 import { useCookies } from "react-cookie";
 import Cookie from 'js-cookie'
+import jwtDecode from "jwt-decode";
 
 export default function UploadFile(props) {
   const [file, setFile] = useState(null);
@@ -17,20 +18,13 @@ export default function UploadFile(props) {
   const [myFiles, setMyFiles] = useState(null);
   const navigate = useNavigate();
   const [cookies, removeCookie] = useCookies(['jwt']);
-
-  let getFiles = async function () {
+ 
+  useEffect(()=>{
     setMyFiles(null);
-    try {
-      await axios
-        .post(baseURL + "files", { email: UserEmail })
-        .then(function (response) {
-          setMyFiles(response.data);
-        });
-    } catch (e) {
-      console.log("There's this error: " + e);
-    }
-  };
-  
+    var userObject = jwtDecode(document.cookie.split(`jwt=`)[1])
+    setUserEmail(userObject.email)
+    getFiles()
+},[])
 
   const logOut = (e) => {
     e.preventDefault()
@@ -45,6 +39,7 @@ export default function UploadFile(props) {
       theme: "dark",
     });
     setTimeout(()=>{
+      setMyFiles(null)
       localStorage.removeItem("app_token");
       removeCookie("jwt")
       Cookie.remove("jwt")
@@ -77,6 +72,7 @@ export default function UploadFile(props) {
     } catch (err) {
       console.log("There was an error");
     }
+    setMyFiles(false)
     getFiles();
   };
   useEffect(() => {
@@ -102,6 +98,21 @@ export default function UploadFile(props) {
   }, [cookies, navigate, removeCookie]);
 
   
+
+  let getFiles = async function () {
+    setMyFiles(null);
+    const email1 = (jwtDecode(document.cookie.split(`jwt=`)[1]).email)
+    setUserEmail(email1)
+    try {
+      await axios
+        .post("http://localhost:4000/files", { email: email1 })
+        .then(function (response) {
+          setMyFiles(response.data);
+        });
+    } catch (e) {
+      console.log("There's this error: " + e);
+    }
+  };
 
   return (
     <div className="container my-2" id="uploader">
@@ -150,7 +161,7 @@ export default function UploadFile(props) {
         pauseOnHover
         theme="dark"
       />
-      <MyFiles files={myFiles} email={UserEmail !== null ? UserEmail : []} />
+      <MyFiles files={myFiles} email={UserEmail !== null ? UserEmail : []} getFiles={()=>getFiles()} />
     </div>
   );
 }

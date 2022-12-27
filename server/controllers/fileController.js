@@ -60,6 +60,7 @@ router.post("/delete/:fname", async (req, res) => {
 });
 
 router.get("/download/:fname", async (req, res) => {
+  console.log(req.params.fname," is downloaded!")
   //download file of fname from uploads folder
   // const file = path.join(
   //   path.parse(__dirname).dir,
@@ -79,7 +80,6 @@ router.get("/download/:fname", async (req, res) => {
     
   // });
 
-  console.log(req.params.fname," is downloaded!")
 });
 
 module.exports = router;

@@ -131,9 +131,10 @@ export default function Login() {
 
     google.accounts.id.renderButton(document.getElementById("signInDiv"), {
       theme: "outline",
-      size: "medium",
+      size: "large",
     });
   });
+  
 
   return (
     <div className="container">

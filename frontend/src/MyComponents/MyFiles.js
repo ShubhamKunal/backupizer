@@ -60,7 +60,7 @@ export default function MyFiles(props) {
                       <td>
                         <button
                           className="btn btn-dark btn-sm"
-                          onClick={() => DeleteFile(file)}
+                          onClick={() => {DeleteFile(file);}}
                         >
                           Delete
                         </button>
