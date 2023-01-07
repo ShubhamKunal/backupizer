@@ -10,7 +10,7 @@ import jwtDecode from "jwt-decode";
 export default function Login() {
   const [cookies] = useCookies([]);
   const navigate = useNavigate();
-  const baseURL = "http://localhost:4000/";
+  const baseURL = "https://fileuploader-server.onrender.com/";
 
   const setHeader = function (token) {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
