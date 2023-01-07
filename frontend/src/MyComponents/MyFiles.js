@@ -5,7 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function MyFiles(props) {
   let files = props.files;
-  const baseURL = "http://localhost:4000/";
+  const baseURL = "https://fileuploader-server.onrender.com/";
   const DeleteFile = async function (filename) {
     toast.warning("😨Deleting", {
       position: "top-center",
