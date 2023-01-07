@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", true);
-mongoose.connect("mongodb://localhost:27017/krayo-disk-db");
+mongoose.connect("mongodb+srv://shubhamkunal:zac@cluster0.p2hyowd.mongodb.net/backupizer-disk-db");
 const filesSchema = mongoose.Schema({
   email: String,
   filename: String,
