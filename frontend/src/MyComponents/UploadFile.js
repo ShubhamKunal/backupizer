@@ -20,10 +20,14 @@ export default function UploadFile(props) {
   const [cookies, removeCookie] = useCookies(['jwt']);
  
   useEffect(()=>{
+    if (!cookies.jwt) {
+      navigate("/login");
+    } else {
     setMyFiles(null);
     var userObject = jwtDecode(document.cookie.split(`jwt=`)[1])
     setUserEmail(userObject.email)
     getFiles()
+    }
 },[])
 
   const logOut = (e) => {
@@ -81,7 +85,7 @@ export default function UploadFile(props) {
         navigate("/login");
       } else {
         const { data } = await axios.post(
-          "http://localhost:4000",
+          baseURL,
           {},
           {
             withCredentials: true,
@@ -105,7 +109,7 @@ export default function UploadFile(props) {
     setUserEmail(email1)
     try {
       await axios
-        .post("http://localhost:4000/files", { email: email1 })
+        .post(baseURL+"files", { email: email1 })
         .then(function (response) {
           setMyFiles(response.data);
         });
@@ -116,7 +120,7 @@ export default function UploadFile(props) {
 
   return (
     <div className="container my-2" id="uploader">
-      <h2>Krayo-Disk</h2>
+      <h2>Backupizer</h2>
       <div className="fw-bold font-monospace">
         Hi, {UserEmail !== null ? UserEmail : "User"}!
       </div>

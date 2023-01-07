@@ -64,10 +64,10 @@ export default function Register() {
   return (
     <div className="container">
       <div className="image">
-        <img src="Krayo_logo.png" alt="Nothing to see here folks!" />
+        <img src="backupizer_logo.png" alt="Nothing to see here folks!" />
       </div>
       <form id="register" onSubmit={(e) => handleSubmit(e)}>
-        <h2>Krayo Disk</h2>
+        <h2>Backupizer</h2>
         <div className="mb-3">
           <h6>Registration Form</h6>
           <label htmlFor="email" className="form-label">

@@ -10,6 +10,7 @@ import jwtDecode from "jwt-decode";
 export default function Login() {
   const [cookies] = useCookies([]);
   const navigate = useNavigate();
+  const baseURL = "http://localhost:4000/";
 
   const setHeader = function (token) {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -24,7 +25,7 @@ export default function Login() {
     e.preventDefault();
     try {
       const { data } = await axios.post(
-        "http://localhost:4000/login",
+        baseURL+"login",
         {
           ...values,
         },
@@ -69,7 +70,7 @@ export default function Login() {
     if (resp.data.exists) {
       //login
       const { data } = await axios.post(
-        "http://localhost:4000/login",
+        baseURL+"login",
         {
           ...values,
         },
@@ -93,7 +94,7 @@ export default function Login() {
     } else {
       //register
       const { data } = await axios.post(
-        "http://localhost:4000/register",
+        baseURL+"register",
         {
           ...values,
         },
@@ -139,10 +140,10 @@ export default function Login() {
   return (
     <div className="container">
       <div className="image">
-        <img src="Krayo_logo.png" alt="Nothing to see here folks!" />
+        <img src="backupizer_logo.png" alt="Nothing to see here folks!" />
       </div>
       <form id="login" onSubmit={(e) => handleSubmit(e)}>
-        <h2>Krayo Disk</h2>
+        <h2>Backupizer</h2>
         <div className="mb-2">
           <h6>Login Form</h6>
           <label htmlFor="email" className="form-label">

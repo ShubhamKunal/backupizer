@@ -5,6 +5,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 export default function MyFiles(props) {
   let files = props.files;
+  const baseURL = "http://localhost:4000/";
   const DeleteFile = async function (filename) {
     toast.warning("😨Deleting", {
       position: "top-center",
@@ -51,7 +52,7 @@ export default function MyFiles(props) {
                           className="btn btn-dark btn-sm"
                           onClick={() =>
                             (document.location.href =
-                              "http://localhost:4000/uploads/" + file)
+                             baseURL+ "uploads/" + file)
                           }
                         >
                           Download
