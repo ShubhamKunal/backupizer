@@ -14,7 +14,7 @@ import jwtDecode from "jwt-decode";
 export default function UploadFile(props) {
   const [file, setFile] = useState(null);
   const [UserEmail, setUserEmail] = useState(null);
-  const baseURL = "http://localhost:4000/";
+  const baseURL = "https://fileuploader-server.onrender.com/";
   const [myFiles, setMyFiles] = useState(null);
   const navigate = useNavigate();
   const [cookies, removeCookie] = useCookies(['jwt']);
