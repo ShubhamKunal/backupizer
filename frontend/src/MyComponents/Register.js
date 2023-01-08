@@ -6,8 +6,11 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useEffect } from "react";
 import { useCookies } from "react-cookie";
+import { Loading } from "./Loading";
+
 export default function Register() {
   const navigate = useNavigate();
+  const [loading,setLoading] = useState(false);
 
   const [cookies] = useCookies(["cookie-name"]);
   useEffect(() => {
@@ -26,6 +29,7 @@ export default function Register() {
   const handleSubmit = async function (e) {
     e.preventDefault();
     try {
+      setLoading(true);
       const { data } = await axios.post(
         "/register",
         {
@@ -33,6 +37,7 @@ export default function Register() {
         },
         { withCredentials: true }
       );
+      setLoading(false);
       setHeader(data.token);
       localStorage.setItem("app_token", "Bearer " + data.token);
       if (data) {
@@ -63,9 +68,9 @@ export default function Register() {
 
   return (
     <div className="container">
-      <div className="image">
+      {loading?<Loading/>:<div className="image">
         <img src="backupizer_logo.png" alt="Nothing to see here folks!" />
-      </div>
+      </div>}
       <form id="register" onSubmit={(e) => handleSubmit(e)}>
         <h2>Backupizer</h2>
         <div className="mb-3">
