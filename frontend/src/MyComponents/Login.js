@@ -6,11 +6,13 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useCookies } from "react-cookie";
 import jwtDecode from "jwt-decode";
+import { Loading } from "./Loading";
 
 export default function Login() {
   const [cookies] = useCookies([]);
   const navigate = useNavigate();
   const baseURL = "https://fileuploader-server.onrender.com/";
+  const [loading,setLoading] = useState(false);
 
   const setHeader = function (token) {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -24,6 +26,7 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const { data } = await axios.post(
         baseURL+"login",
         {
@@ -35,6 +38,7 @@ export default function Login() {
       localStorage.setItem("app_token", "Bearer " + data.token);
       setHeader(data.token);
       if (data) {
+        setLoading(false)
         if (data.errors) {
           const { email, password } = data.errors;
           if (email) generateError(email);
@@ -65,8 +69,8 @@ export default function Login() {
     var userObject = jwtDecode(token);
     values.email = userObject.email;
     values.password = userObject.email;
-
-    const resp = await axios.post(baseURL+"exists", { ...values });
+    setLoading(true);
+    const resp = await axios.post("/exists", { ...values });
     if (resp.data.exists) {
       //login
       const { data } = await axios.post(
@@ -100,6 +104,7 @@ export default function Login() {
         },
         { withCredentials: true }
       );
+      setLoading(false);
       localStorage.setItem("app_token", "Bearer " + data.token);
       setHeader(data.token);
       toast.info("😘 Logging in!", {
@@ -136,12 +141,11 @@ export default function Login() {
     });
   });
   
-
   return (
     <div className="container">
-      <div className="image">
+      {loading?<Loading/>:<div className="image">
         <img src="backupizer_logo.png" alt="Nothing to see here folks!" />
-      </div>
+      </div>}
       <form id="login" onSubmit={(e) => handleSubmit(e)}>
         <h2>Backupizer</h2>
         <div className="mb-2">
