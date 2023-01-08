@@ -66,7 +66,7 @@ export default function Login() {
     values.email = userObject.email;
     values.password = userObject.email;
 
-    const resp = await axios.post("/exists", { ...values });
+    const resp = await axios.post(baseURL+"exists", { ...values });
     if (resp.data.exists) {
       //login
       const { data } = await axios.post(
