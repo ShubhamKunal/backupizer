@@ -28,6 +28,7 @@ export default function UploadFile(props) {
     setUserEmail(userObject.email)
     getFiles()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
 },[])
 
   const logOut = (e) => {
