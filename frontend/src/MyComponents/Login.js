@@ -10,7 +10,7 @@ import { Loading } from "./Loading";
 
 export default function Login() {
   const navigate = useNavigate();
-  const baseURL = "http://localhost:4000/";
+  const baseURL = "https://fileuploader-server.onrender.com/";
   const [loading,setLoading] = useState(false);
   // eslint-disable-next-line
   const [cookies, setCookie, removeCookie] = useCookies(["jwt"]);
