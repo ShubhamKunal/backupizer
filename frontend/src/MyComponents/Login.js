@@ -9,10 +9,11 @@ import jwtDecode from "jwt-decode";
 import { Loading } from "./Loading";
 
 export default function Login() {
-  const [cookies] = useCookies([]);
   const navigate = useNavigate();
-  const baseURL = "https://fileuploader-server.onrender.com/";
+  const baseURL = "http://localhost:4000/";
   const [loading,setLoading] = useState(false);
+  // eslint-disable-next-line
+  const [cookies, setCookie, removeCookie] = useCookies(["jwt"]);
 
   const setHeader = function (token) {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
@@ -55,6 +56,7 @@ export default function Login() {
             theme: "dark",
           });
           setTimeout(()=>{
+            setCookie("jwt", data.token);
             navigate("/");
           },2000)
         }
@@ -118,6 +120,7 @@ export default function Login() {
         theme: "dark",
       });
       setTimeout(()=>{
+        setCookie("jwt",data.token);
         navigate("/");
       },2000)
     }
@@ -141,6 +144,7 @@ export default function Login() {
     });
   });
   
+
   return (
     <div className="container">
       {loading?<Loading/>:<div className="image">
