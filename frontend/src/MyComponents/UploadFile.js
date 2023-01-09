@@ -18,6 +18,7 @@ export default function UploadFile(props) {
   const [myFiles, setMyFiles] = useState(null);
   const navigate = useNavigate();
   const [cookies, removeCookie] = useCookies(['jwt']);
+  const [bulb,setBulb] = useState(true);
  
   useEffect(()=>{
     if (!cookies.jwt) {
@@ -26,7 +27,10 @@ export default function UploadFile(props) {
     setMyFiles(null);
     var userObject = jwtDecode(document.cookie.split(`jwt=`)[1])
     setUserEmail(userObject.email)
-    getFiles()
+    if(bulb){
+        getFiles()
+        setBulb(false);
+      } 
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
 },[])
@@ -46,7 +50,6 @@ export default function UploadFile(props) {
     setTimeout(()=>{
       setMyFiles(null)
       localStorage.removeItem("app_token");
-      removeCookie("jwt")
       Cookie.remove("jwt")
       navigate("/login");
     },2000)
