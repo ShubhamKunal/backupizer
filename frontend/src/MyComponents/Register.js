@@ -11,8 +11,8 @@ import { Loading } from "./Loading";
 export default function Register() {
   const navigate = useNavigate();
   const [loading,setLoading] = useState(false);
-
-  const [cookies] = useCookies(["cookie-name"]);
+  // eslint-disable-next-line
+  const [cookies, setCookie, removeCookie] = useCookies(["jwt"]);
   useEffect(() => {
     if (cookies.jwt) {
       navigate("/");
@@ -57,6 +57,7 @@ export default function Register() {
             theme: "dark",
           });
           setTimeout(() => {
+            setCookie("jwt",data.token);
             navigate("/");
           }, 2000);
         }
